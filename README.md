@@ -1,33 +1,33 @@
-Get to the part that really matters faster, the science!
+#Get to the part that really matters faster, the science!
 
-This package aims to help in the analysis and pre-processing 
-of data for predictive modeling.
+This package aims to data analysis and feature engineering process
+faster for predictive modeling.
 
-!!!IMPORTANT!!!
+##!!!IMPORTANT!!!
 It is made for use with continuous and binary targets only!
 Targets must be fed as numeric to PreSci!
 
-After instantiating it:
+###After instantiating it:
     presci = PreSci(data, target_name)
 
-You can easily plot features of a given dataset with:
+###You can easily plot features of a given dataset with:
     presci.plot_features()
 
-You can print a meta data dictionary to the console with:
+###You can print a meta data dictionary to the console with:
     presci.print_meta_data()
 
-You can print a correlation table with:
+###You can print a correlation table with:
     presci.print_correlation()
 
-You can also infer on the data after the transformations with:
+###You can also infer on the data after the transformations with:
     presci.post_plot_features()
     presci.post_print_meta_data()
     presci.post_print_correlation()
 
-You can transform data for training with:
+###You can transform data for training with:
     presci.fit_transform()
 
-And for predicting with:
+###And for predicting with:
     presci.transform(data)
 
 On feature engineering, this package replaces rare labels on categorical data, 
@@ -35,7 +35,7 @@ encodes categorical (and discrete, if requested) data, replaces missing data usi
 normalizes the distribution of data with high skewness, embeds data using NNs (if requested), 
 and scales data, in order.
 
-!!!IMPORTANT!!!
+##!!!IMPORTANT!!!
 If you should choose to ordinally encode your categorical data,and you have some criteria to 
 do so, I strongly encourage you to encode according to your criteria before feeding the data 
 into PreSci!
