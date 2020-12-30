@@ -8,7 +8,7 @@ It is made for use with continuous and binary targets only!
 Targets must be fed as numeric to PreSci!
 
 #### Import it:
-##### (from the folder directly above the presci folder)
+##### (from directory directly above the presci directory)
     from presci.app.presci import PreSci
 
 #### After instantiating it:
