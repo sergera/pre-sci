@@ -7,6 +7,10 @@ faster for predictive modeling.
 It is made for use with continuous and binary targets only!
 Targets must be fed as numeric to PreSci!
 
+#### Import it:
+##### (from the folder directly above the presci folder)
+    from presci.app.presci import PreSci
+
 #### After instantiating it:
     presci = PreSci(data, target_name)
 
