@@ -64,10 +64,10 @@ Non-categorical unknown values will be left as NaN for the MICE model to predict
         mean of target value for label a is 50
         mean of target value for label b is 80
         nean of target value for label c is 100
-        encoded values are {a:0, b:1, c:3}
+        encoded values are {a:0, b:1, c:2}
         
     Binary Target:
         10% of label a has target == 1
         30% of label b has target == 1
         60% of label c target == 1
-        encoded values are {a:0, b:1, c:3}
+        encoded values are {a:0, b:1, c:2}
