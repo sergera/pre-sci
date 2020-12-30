@@ -16,7 +16,7 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import OneHotEncoder
 import scipy
 
-from presci.transformer.embedder import Embedder
+from transformer.embedder import Embedder
 
 class Transformer:
     def __init__(self, test_size=0.1, seed=0, skewness_threshold=0.5):

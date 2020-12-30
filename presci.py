@@ -4,9 +4,9 @@ import json
 import pandas as pd
 import numpy as np
 
-from presci.analyzer.analyzer import Analyzer
-from presci.plot.plot import Plot
-from presci.transformer.transformer import Transformer
+from analyzer.analyzer import Analyzer
+from plot.plot import Plot
+from transformer.transformer import Transformer
 
 class PreSci():
     """Get to the part that really matters faster, the science!
@@ -172,7 +172,7 @@ class PreSci():
             in the end. Example:
 
             def custom_transform(data):
-                data["Feature"] = data["Feature"].apply(lambda x: x + 1)
+                data.loc[:,"Feature"] = data.loc[:,"Feature"].apply(lambda x: x + 1)
                 return data
         """
         self.data = data
@@ -235,9 +235,8 @@ class PreSci():
         """
         data = self.data
 
-        # data = self.callback(data)
-        # print("AFTER CALLBACK")
-        # print(data.head(30))
+        if self.callback:
+            data = self.callback(data)
 
         self.set_original_names(data)
         data = self.replace_rare_labels(data)
@@ -279,7 +278,8 @@ class PreSci():
             - Scales variable values
         """
         data = data.loc[:,self.meta_data["all_features"]]
-        # data = self.callback(data)
+        if self.callback:
+            data = self.callback(data)
         data = self.replace_rare_labels(data)
         data = self.encode(data)
         data.update(self.replace_missing(data))
@@ -385,7 +385,8 @@ class PreSci():
             auto_encoder_exists = True
 
         for var_name, info in self.meta_data["features"].items():
-            # set categorical vars that were not set to encode to be auto-encoded or ordinal-encoded
+            # set categorical vars that were not set to encode to be auto-encoded
+            # if target is not binary nor continuous set them to be ordinal encoded
             # if categorical var is set to be embedded it will also be encoded before
             var_not_set_to_encode = var_name not in self.to_onehot_encode and var_name not in self.to_ordinal_encode and var_name
             if "categorical" in info and var_not_set_to_encode:
