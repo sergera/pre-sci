@@ -19,7 +19,7 @@ import scipy
 from .embedder import Embedder
 
 class Transformer:
-    def __init__(self, test_size=0.1, seed=0, skewness_threshold=0.5):
+    def __init__(self, test_size, seed, skewness_threshold=0.5):
         """
         test_size: float
             Ratio of dataset that will be split for testing during training
@@ -99,7 +99,6 @@ class Transformer:
 
     def fit_auto_encoder_binary_target(self, data, to_auto, target):
         for var_name in to_auto:
-            print("AUTO ENCODING: ", var_name)
             feature_labels = data[var_name].dropna().unique()
             feature_size = len(data[var_name].copy().dropna().index)
             max_target = data[target].unique().max()
@@ -202,7 +201,7 @@ class Transformer:
             self.__fit_scaler_for_NN(data, var_name)
             scaled_var_np_array = self.__scale_for_NN(data, var_name)
 
-            self.embedder_models[var_name] = Embedder(scaled_var_np_array, var_cardinality, data[target_name])
+            self.embedder_models[var_name] = Embedder(scaled_var_np_array, var_cardinality, data[target_name], self.seed)
             self.to_embed.append(var_name)
 
     def __fit_scaler_for_NN(self, data, var_name):

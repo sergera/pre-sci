@@ -88,9 +88,10 @@ class PreSci():
     """
 
     def __init__ (self, data, target, discrete_threshold=20, unique_threshold=0.9, 
-        rare_threshold=0.01, outlier_threshold=3, remove_outliers=False, 
-        skewness_threshold=0.5, to_onehot_encode=[], to_ordinal_encode=[], to_embed=[], 
-        to_auto_encode=[], dont_scale=[], dont_normalize=[], seed=0, callback=None):
+        rare_threshold=0.01, outlier_threshold=3, skewness_threshold=0.5, 
+        to_onehot_encode=[], to_ordinal_encode=[], to_embed=[], to_auto_encode=[], 
+        dont_scale=[], dont_normalize=[], seed=0, callback=None, remove_outliers=False,
+        test_size=0.1):
         """
         data: Pandas DataFrame
             Training Dataset with features and target
@@ -192,6 +193,7 @@ class PreSci():
         self.dont_scale = dont_scale
         self.dont_normalize = dont_normalize
         self.seed = seed
+        self.test_size = test_size
         self.callback = callback
 
         self.plot = Plot()
@@ -232,6 +234,7 @@ class PreSci():
         self.transformer = Transformer(
             skewness_threshold=skewness_threshold,
             seed=seed,
+            test_size=self.test_size,
         )
 
     def transform_fit(self):

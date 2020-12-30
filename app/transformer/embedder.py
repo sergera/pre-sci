@@ -1,4 +1,3 @@
-
 # fix randomness as best as possible
 seed_value = 0
 import os
@@ -27,11 +26,13 @@ class LearningRateReducerCb(tf.keras.callbacks.Callback):
     self.model.optimizer.lr.assign(new_lr)
 
 class Embedder():
-    def __init__(self, categorical_feature, cardinality, target):
+    def __init__(self, categorical_feature, cardinality, target, seed):
         self.sample_size = len(categorical_feature)
         self.categorical_feature = categorical_feature
         self.cardinality = cardinality
         self.target = target
+        self.seed = seed
+
         # if target['is_continuous']:
         if False:
             self.loss_function = rmse
