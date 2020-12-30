@@ -1,6 +1,6 @@
 ## Get to the part that really matters faster, the science!
 
-This package aims to data analysis and feature engineering process
+PreSci aims to make the data analysis and feature engineering process
 faster for predictive modeling.
 
 ### !!!IMPORTANT!!!
