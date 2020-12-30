@@ -169,13 +169,15 @@ class PreSci():
             This is a custom transformation that will be applied to the dataset before 
             the training and predicting transformations, it should only be applied to features,
             and should have a parameter, that will be the dataset, and return this parameter
-            in the end. Example:
+            in the end. 
+            
+            Callback Example:
 
             def custom_transform(data):
-                data.loc[:,"Feature"] = data.loc[:,"Feature"].apply(lambda x: x + 1)
+                data.drop(["column_a", "column_b"], inplace=True, axis=1)
+                data.loc[:,"column_c"] = data.loc[:,"column_c"].apply(lambda x: x + 1)
                 return data
         """
-        self.data = data
         self.target = target
         self.discrete_threshold = discrete_threshold
         self.unique_threshold = unique_threshold
@@ -194,8 +196,23 @@ class PreSci():
 
         self.plot = Plot()
 
+        def copy_data(func):
+            def wrapper(data):
+                data = data.copy()
+                return func(data)
+            return wrapper
+
+        if self.callback:
+            # if there is a transform callback
+            # make sure data is copied
+            self.callback = copy_data(self.callback)
+            # analyzer must recieve the transformed data
+            self.data = self.callback(data)
+        else:
+            self.data = data
+
         self.analysis = Analyzer(
-            data, 
+            self.data, 
             target, 
             discrete_threshold, 
             unique_threshold, 
@@ -235,12 +252,9 @@ class PreSci():
         """
         data = self.data
 
-        if self.callback:
-            data = self.callback(data)
-
         self.set_original_names(data)
         data = self.replace_rare_labels(data)
-        
+
         if self.remove_outliers:
             data = self.remove_outlier_rows(data)
 
@@ -277,15 +291,15 @@ class PreSci():
             - Embeds variables
             - Scales variable values
         """
-        data = data.loc[:,self.meta_data["all_features"]]
         if self.callback:
             data = self.callback(data)
+        data = data.loc[:,self.meta_data["all_features"]]
         data = self.replace_rare_labels(data)
         data = self.encode(data)
         data.update(self.replace_missing(data))
         data = self.embed(data)
         data = self.normalize(data)   
-        data = self.scale(data)    
+        data = self.scale(data)
         return data
 
     def print_meta_data(self):
