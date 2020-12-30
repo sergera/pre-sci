@@ -4,9 +4,9 @@ import json
 import pandas as pd
 import numpy as np
 
-from analyzer.analyzer import Analyzer
-from plot.plot import Plot
-from transformer.transformer import Transformer
+from .analyzer.analyzer import Analyzer
+from .plot.plot import Plot
+from .transformer.transformer import Transformer
 
 class PreSci():
     """Get to the part that really matters faster, the science!
