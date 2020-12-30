@@ -33,19 +33,8 @@ class Embedder():
         self.target = target
         self.seed = seed
 
-        # if target['is_continuous']:
-        if False:
-            self.loss_function = rmse
-            self.optimizer = "rmsprop"
-            # self.loss_function = "mse"
-            # self.optimizer = "adam"
-        elif True:
-            #target is binary
-            self.loss_function = tf.nn.softmax_cross_entropy_with_logits
-            self.optimizer = "adam"
-        else:
-            self.loss_function = "categorical_crossentropy"
-            self.optimizer = "adam"
+        self.loss_function = tf.nn.softmax_cross_entropy_with_logits
+        self.optimizer = "adam"
 
         self.model = keras.Sequential()
         self.embedding_size = min(50, self.cardinality+1/2)
@@ -54,7 +43,6 @@ class Embedder():
         self.fit()
         
     def create_model(self):
-        # self.model.add(layers.InputLayer(input_shape=(1,),name='input_' + '_'.join(self.categorical_feature.name)))
         self.model.add(
             layers.Embedding(
                 input_dim=self.cardinality,
