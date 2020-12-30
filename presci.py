@@ -78,13 +78,13 @@ class PreSci():
             mean of target value for label a is 50
             mean of target value for label b is 80
             nean of target value for label c is 100
-            encoded values are {a:0, b:1, c:3}
+            encoded values are {a:0, b:1, c:2}
 
         Binary Target:
             10% of label a has target == 1
             30% of label b has target == 1
             60% of label c target == 1
-            encoded values are {a:0, b:1, c:3}
+            encoded values are {a:0, b:1, c:2}
     """
 
     def __init__ (self, data, target, discrete_threshold=20, unique_threshold=0.9, 
@@ -208,9 +208,9 @@ class PreSci():
 
         # this will be a new analyzer so the user can infer on the
         # data post transforms
-        # self.post_analysis = None
-        # self.post_meta_data = None
-        # self.post_data = None
+        self.post_analysis = None
+        self.post_meta_data = None
+        self.post_data = None
 
         self.transformer = Transformer(
             skewness_threshold=skewness_threshold,
@@ -281,21 +281,11 @@ class PreSci():
         data = data.loc[:,self.meta_data["all_features"]]
         # data = self.callback(data)
         data = self.replace_rare_labels(data)
-        print("AFTER REPLACING RARE LABELS")
-        print(data.head(10))
         data = self.encode(data)
-        print("AFTER ENCODING")
-        print(data.head(10))
         data.update(self.replace_missing(data))
-        print("AFTER REPLACING MISSING")
-        print(data.head(10))
         data = self.embed(data)
-        data = self.normalize(data)
-        print("AFTER NORMALIZING")
-        print(data.head(10))      
-        data = self.scale(data)
-        print("AFTER SCALING")
-        print(data.head(10))     
+        data = self.normalize(data)   
+        data = self.scale(data)    
         return data
 
     def print_meta_data(self):
