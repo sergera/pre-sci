@@ -36,11 +36,3 @@ coverage.xml
 
 # Translations
 *.mo
-
-# dev and testing
-test.py
-*.csv
-/model
-
-# personal organization
-commit.txt

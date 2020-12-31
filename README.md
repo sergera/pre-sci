@@ -9,7 +9,7 @@ Targets must be fed as numeric to PreSci!
 
 #### Import it:
 ##### (from directory directly above the presci directory)
-    from presci.app.presci import PreSci
+    from presci.presci import PreSci
 
 #### After instantiating it:
     presci = PreSci(data, target_name)
