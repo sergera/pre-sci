@@ -196,8 +196,6 @@ class PreSci():
         self.test_size = test_size
         self.callback = callback
 
-        self.plot = Plot()
-
         def copy_data(func):
             def wrapper(data):
                 data = data.copy()
@@ -212,6 +210,10 @@ class PreSci():
             self.data = self.callback(data)
         else:
             self.data = data
+
+        # save data post custom transform for plotting
+        self.original_data = self.data.copy()
+        self.plot = Plot()
 
         self.analysis = Analyzer(
             self.data, 
@@ -309,7 +311,7 @@ class PreSci():
         self.__print_meta_data(self.meta_data)
 
     def plot_features(self):
-        self.__plot_features(self.data ,self.meta_data)
+        self.__plot_features(self.original_data, self.meta_data)
     
     def print_correlation(self):
         data = self.data.copy()
@@ -342,7 +344,7 @@ class PreSci():
 
     def post_print_correlation(self):
         try:
-            correlation_table = post_data.corr(method="pearson")
+            correlation_table = self.post_data.corr(method="pearson")
             print(correlation_table)    
         except Exception as UntimedAccessException:
             raise Exception(

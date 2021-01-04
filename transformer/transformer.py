@@ -148,7 +148,7 @@ class Transformer:
             else:
                 # if value exists and is unknown
                 if "categorical" in info:
-                    return 0
+                    return -1
                 else:
                     return np.nan
         
