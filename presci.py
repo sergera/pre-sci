@@ -90,8 +90,8 @@ class PreSci():
     def __init__ (self, data, target, discrete_threshold=20, unique_threshold=0.9, 
         rare_threshold=0.01, outlier_threshold=3, skewness_threshold=0.5, 
         to_onehot_encode=[], to_ordinal_encode=[], to_embed=[], to_auto_encode=[], 
-        dont_scale=[], dont_normalize=[], seed=0, callback=None, remove_outliers=False,
-        test_size=0.1):
+        custom_encoders={}, dont_scale=[], dont_normalize=[], seed=0, callback=None, 
+        remove_outliers=False, test_size=0.1):
         """
         data: Pandas DataFrame
             Training Dataset with features and target
@@ -153,6 +153,13 @@ class PreSci():
             variables should be categorical or discrete, and should not include target,
             note that auto_encode only works with continuous or binary targets
 
+        custom_encoders: {variable: {label: encoding}}
+            A dictionary of variables to be encoded by the user, each key is a variable name,
+            and each value is a dictionary that has current labels as keys and encoded values
+            as values.
+            This can be used for categorical or discrete variables.
+            Put ALL KNOWN VALUES in the encoder, any forgotten values will be treated as unknown.
+
         dont_scale: [string]
             List of variable names to not be scaled by transformer, this will only work for 
             the final scalling, if the variable is to be embedded it will be scaled for NN 
@@ -170,7 +177,16 @@ class PreSci():
             This is a custom transformation that will be applied to the dataset before 
             the training and predicting transformations, it should only be applied to features,
             and should have a parameter, that will be the dataset, and return this parameter
-            in the end. 
+            in the end.
+
+            This function will be called before everything (even analysis!), this means that 
+            the plotted features will have the characteristics given by this function. So 
+            don't do here, anything you wouldn't want to see in a graph. 
+            
+            It should contain feature selection, and preliminary transformations, any more 
+            advanced transformation (like encodings) should be done with the encoding auto 
+            parameters like "to_onehot_encode", and "to_ordinal_encode" and "to_auto_encode",
+            or with "custom_encoders" for increased control (read above).
             
             Callback Example:
 
@@ -190,6 +206,7 @@ class PreSci():
         self.to_ordinal_encode = to_ordinal_encode
         self.to_embed = to_embed
         self.to_auto_encode = to_auto_encode
+        self.custom_encoders = custom_encoders
         self.dont_scale = dont_scale
         self.dont_normalize = dont_normalize
         self.seed = seed
@@ -198,8 +215,8 @@ class PreSci():
 
         def copy_data(func):
             def wrapper(data):
-                data = data.copy()
-                return func(data)
+                copied_data = data.copy()
+                return func(copied_data)
             return wrapper
 
         if self.callback:
@@ -210,10 +227,6 @@ class PreSci():
             self.data = self.callback(data)
         else:
             self.data = data
-
-        # save data post custom transform for plotting
-        self.original_data = self.data.copy()
-        self.plot = Plot()
 
         self.analysis = Analyzer(
             self.data, 
@@ -227,17 +240,23 @@ class PreSci():
 
         self.meta_data = self.analysis.get_meta_data()
 
-        # this will be a new analyzer so the user can infer on the
-        # data post transforms
-        self.post_analysis = None
-        self.post_meta_data = None
-        self.post_data = None
-
         self.transformer = Transformer(
             skewness_threshold=skewness_threshold,
             seed=seed,
             test_size=self.test_size,
         )
+
+        # replacing rare labels from training data here 
+        # so that the user can see them when plotting
+        # rare labels from predicting data will be dealt with in the "transform" method
+        self.original_data = self.replace_rare_labels(self.data.copy())
+        self.plot = Plot()
+
+        # this will be a new analyzer so the user can infer on the
+        # data post transforms
+        self.post_analysis = None
+        self.post_meta_data = None
+        self.post_data = None
 
     def transform_fit(self):
         """Transform for training
@@ -266,6 +285,8 @@ class PreSci():
         self.fit_encoders(data)
         data = self.encode(data)
 
+        # sklearn's IterativeImputer (MICE) depends on the order of columns
+        data = data.sort_index(axis=1)
         features_only = data.drop(self.target, axis=1)
         self.fit_mice(features_only)
         data.update(self.replace_missing(features_only))
@@ -298,10 +319,15 @@ class PreSci():
         """
         if self.callback:
             data = self.callback(data)
+
         data = data.loc[:,self.meta_data["all_features"]]
         data = self.replace_rare_labels(data)
         data = self.encode(data)
+
+        # sklearn's IterativeImputer (MICE) depends on the order of columns
+        data = data.sort_index(axis=1)
         data.update(self.replace_missing(data))
+
         data = self.embed(data)
         data = self.normalize(data)   
         data = self.scale(data)
@@ -394,33 +420,48 @@ class PreSci():
         return data
 
     def fit_encoders(self, data):
+        # check if there are any variables set for different encoders, which is not allowed
+        # with the exception of ordinal-embed, and custom-embed, since variables must be encoded before embeded
+        intersections = {}
+        intersections["onehot_ordinal"] = set.intersection(set(self.to_onehot_encode), set(self.to_ordinal_encode))
+        intersections["onehot_custom"] = set.intersection(set(self.to_onehot_encode), set(self.custom_encoders))
+        intersections["onehot_embed"] = set.intersection(set(self.to_embed), set(self.to_onehot_encode))
+        intersections["ordinal_embed"] = set.intersection(set(self.to_embed), set(self.to_ordinal_encode))
+        intersections["ordinal_custom"] = set.intersection(set(self.to_ordinal_encode), set(self.custom_encoders))
+        intersections["custom_embed"] = set.intersection(set(self.to_embed), set(self.custom_encoders))
+        for intersection_name, intersection_value in intersections.items():
+            if intersection_value:
+                raise Exception(
+                """Same variable was set to encode in more than one encoder!""")
+
         # check if auto-encoder is possible, if not use ordinal-encoding
-        auto_encoder_exists = False
+        auto_encoder_possible = False
         if "continuous" in self.meta_data["target"]:
             fit_auto_encoder = self.transformer.fit_auto_encoder_continuous_target
-            auto_encoder_exists = True
+            auto_encoder_possible = True
         elif "binary" in self.meta_data["target"]:
             fit_auto_encoder = self.transformer.fit_auto_encoder_binary_target
-            auto_encoder_exists = True
+            auto_encoder_possible = True
 
         for var_name, info in self.meta_data["features"].items():
             # set categorical vars that were not set to encode to be auto-encoded
             # if target is not binary nor continuous set them to be ordinal encoded
             # if categorical var is set to be embedded it will also be encoded before
-            var_not_set_to_encode = var_name not in self.to_onehot_encode and var_name not in self.to_ordinal_encode and var_name
+            var_not_set_to_encode = var_name not in self.to_onehot_encode and var_name not in self.to_ordinal_encode and var_name not in self.custom_encoders
             if "categorical" in info and var_not_set_to_encode:
                 if var_name not in self.to_auto_encode:
-                    if auto_encoder_exists:
+                    if auto_encoder_possible:
                         self.to_auto_encode.append(var_name)
-                    elif not auto_encoder_exists:
+                    elif not auto_encoder_possible:
                         self.to_ordinal_encode.append(var_name)
 
         fit_auto_encoder(data, self.to_auto_encode, self.target)
         self.transformer.fit_onehot_encoder_model(data, self.to_onehot_encode)
         self.transformer.fit_ordinal_encoder_model(data, self.to_ordinal_encode)
+        self.transformer.set_custom_encoders(self.custom_encoders)
 
     def encode(self, data):
-        data = self.transformer.encode_categorical(data, self.meta_data["features"])
+        data = self.transformer.encode_all(data, self.meta_data["features"])
         return data
 
     def fit_mice(self, features):

@@ -47,6 +47,9 @@ class Transformer:
         # dict of auto encoders made in relation to target value according to it's type
         self.auto_encoders = {}
         self.to_auto_encode =[]
+        # dict of custom encodings to be used
+        self.custom_encoders = {}
+        self.to_custom_encode = []
         # dict of categorical embedder NN models for each categorical variable
         self.embedder_models = {}
         self.to_embed = []
@@ -114,7 +117,12 @@ class Transformer:
             self.auto_encoders[var_name] = sorted_label_map
             self.to_auto_encode.append(var_name)
 
-    def encode_categorical(self, data, features_info):
+    def set_custom_encoders(self, custom_encoders):
+        self.custom_encoders = custom_encoders
+        for variable in custom_encoders:
+            self.to_custom_encode.append(variable)
+
+    def encode_all(self, data, features_info):
         for var_name in self.to_onehot_encode:
             data = self.__onehot_encode_existing_values(data, var_name)
         for var_name in self.to_ordinal_encode:
@@ -137,13 +145,13 @@ class Transformer:
                 elif str_or_num.lower() == "":
                     return True
             else:
-                # will always return False with NaN values
+                # will always return True with NaN values
                 return str_or_num != str_or_num
 
-        def auto_encode(x, var_name, info):
-            if x in self.auto_encoders[var_name]:
-                return self.auto_encoders[var_name][x]
-            if is_missing(x):
+        def encode(value, encoder, var_name, info):
+            if value in encoder[var_name]:
+                return encoder[var_name][value]
+            if is_missing(value):
                 return np.nan
             else:
                 # if value exists and is unknown
@@ -151,9 +159,13 @@ class Transformer:
                     return -1
                 else:
                     return np.nan
-        
+
+        for var_name in self.to_custom_encode:
+            data.loc[:,var_name] = data.loc[:,var_name].apply(encode, args=[self.custom_encoders, var_name, features_info[var_name]])
+
         for var_name in self.to_auto_encode:
-            data.loc[:,var_name] = data.loc[:,var_name].apply(auto_encode, args=[var_name, features_info[var_name]])
+            data.loc[:,var_name] = data.loc[:,var_name].apply(encode, args=[self.auto_encoders, var_name, features_info[var_name]])
+
         return data
 
     def __onehot_encode_existing_values(self, data, var_name):
