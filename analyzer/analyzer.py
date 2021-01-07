@@ -68,6 +68,7 @@ class Analyzer():
 
         self.__set_target()
         self.__set_features()
+        self.__set_variables()
 
         self.__set_na()
 
@@ -167,12 +168,30 @@ class Analyzer():
         target = self.meta_data["features"].pop(self.target)
         self.meta_data["target"] = target
         self.meta_data["target"]["name"] = self.target
-        self.meta_data["all_variables"].append(self.target)
 
     def __set_features(self):
-        for feature in self.meta_data["features"]:
+        """ Makes list of features
+
+        This method makes a feature list in the order they were inputed
+        in the training dataframe.
+
+        It's important to keep all columns in the same order because some 
+        functionalities are based on this order.
+        """
+        for feature in self.data.drop(self.target, axis=1).columns:
             self.meta_data["all_features"].append(feature)
-            self.meta_data["all_variables"].append(feature)
+
+    def __set_variables(self):
+        """ Makes list of variables
+
+        This method makes a variable list in the order they were inputed
+        in the training dataframe.
+
+        It's important to keep all columns in the same order because some 
+        functionalities are based on this order.
+        """
+        for variable in self.data.columns:
+            self.meta_data["all_variables"].append(variable)
 
     def __set_na(self):
         vars_with_na = [var for var in self.data.columns if self.data.loc[:,var].isnull().sum() > 0]

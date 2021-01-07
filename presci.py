@@ -223,7 +223,7 @@ class PreSci():
             # if there is a transform callback
             # make sure data is copied
             self.callback = copy_data(self.callback)
-            # analyzer must recieve the transformed data
+            # analyzer must receive the transformed data
             self.data = self.callback(data)
         else:
             self.data = data
@@ -285,8 +285,6 @@ class PreSci():
         self.fit_encoders(data)
         data = self.encode(data)
 
-        # sklearn's IterativeImputer (MICE) depends on the order of columns
-        data = data.sort_index(axis=1)
         features_only = data.drop(self.target, axis=1)
         self.fit_mice(features_only)
         data.update(self.replace_missing(features_only))
@@ -319,15 +317,12 @@ class PreSci():
         """
         if self.callback:
             data = self.callback(data)
-
+        # "all_features" is ordered as it was in the original training data (post callback)
+        # this is necessary for the MICE model (IterativeImputer)
         data = data.loc[:,self.meta_data["all_features"]]
         data = self.replace_rare_labels(data)
         data = self.encode(data)
-
-        # sklearn's IterativeImputer (MICE) depends on the order of columns
-        data = data.sort_index(axis=1)
         data.update(self.replace_missing(data))
-
         data = self.embed(data)
         data = self.normalize(data)   
         data = self.scale(data)
