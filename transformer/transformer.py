@@ -112,9 +112,12 @@ class Transformer:
                 occurences = len(data[(data.loc[:,var_name] == label) & (data.loc[:,target] == max_target)].index)
                 label_map[label] = occurences / label_size
 
+            # TO DO: decide whether to use soft or hard auto encodings for binary targets
+            # soft = label_map, and hard = sorted_label_map
             sorted_labels = sorted(label_map.items(), key=lambda item: item[1], reverse=False)
             sorted_label_map = {k[0]: v for v, k in enumerate(sorted_labels, 0)}
-            self.auto_encoders[var_name] = sorted_label_map
+
+            self.auto_encoders[var_name] = label_map
             self.to_auto_encode.append(var_name)
 
     def set_custom_encoders(self, custom_encoders):
@@ -134,6 +137,7 @@ class Transformer:
             elif str_or_num == None:
                 return True
             elif type(str_or_num) == str:
+                # TO DO: define a parameter to set the NaN strings directly to pandas
                 if str_or_num.lower() == "nan":
                     return math.isnan(float(str_or_num))
                 elif str_or_num.lower() == "na":
@@ -156,6 +160,7 @@ class Transformer:
             else:
                 # if value exists and is unknown
                 if "categorical" in info:
+                    # TO DO: decide if unknown categorical should be -1, 0, or NaN
                     return -1
                 else:
                     return np.nan
