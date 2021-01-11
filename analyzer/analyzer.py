@@ -215,7 +215,7 @@ class Analyzer():
 
         target_mean_per_variable_value = {}
         for variable_value in unique_variable_values:
-            rows_variable_value = join.loc[:,join.loc[:,var] == variable_value]
+            rows_variable_value = join[join.loc[:,var] == variable_value]
             target_only = rows_variable_value[self.target]
             mean = target_only.mean()
             target_mean_per_variable_value[variable_value] = round(mean,2)
