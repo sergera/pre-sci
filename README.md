@@ -1,7 +1,7 @@
 ## Purpose
 
 The purpose of this project is purely educational, I do not claim that
-it a general solution for machine learning problems in any way, nor
+it is a general solution for machine learning problems in any way, nor
 do I claim that it is the most performatic, scalable, best, or even the 
 safest solution.
 
