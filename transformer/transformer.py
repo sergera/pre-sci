@@ -252,7 +252,7 @@ class Transformer:
             skewness = data.loc[:,var_name].skew()
             original_name = self.__original_name(var_name)
             onehot_encoded = original_name in self.to_onehot_encode
-            excluded = original_name in dont_normalize
+            excluded = original_name in dont_normalize or var_name == target
             info = meta_data["features"][original_name] if var_name != target else meta_data["target"]
             binary = "binary" in info
             continuous = "continuous" in info
@@ -260,9 +260,9 @@ class Transformer:
                 data.loc[:,var_name] = np.where(data.loc[:,var_name] > 0, np.log(data.loc[:,var_name].copy().astype('float64')), data.loc[:,var_name].copy())
         return data
 
-    def fit_scaler_models(self, data, dont_scale, all_continuous):
+    def fit_scaler_models(self, data, dont_scale, all_continuous, target):
         for var_name in data.columns:
-            if self.__original_name(var_name) not in dont_scale:
+            if self.__original_name(var_name) not in dont_scale and var_name != target:
                 if self.__original_name(var_name) in all_continuous:
                     skewness = data[var_name].skew()
                     if skewness > self.skewness_threshold:
@@ -274,9 +274,9 @@ class Transformer:
 
                 self.scaler_models[var_name].fit(data.loc[:,var_name].values.reshape(-1,1))
 
-    def scale(self, data, dont_scale):
+    def scale(self, data, dont_scale, target):
         for var_name in data.columns:
-            if self.__original_name(var_name) not in dont_scale:
+            if self.__original_name(var_name) not in dont_scale and var_name != target:
                 data.loc[:,var_name] = self.scaler_models[var_name].transform(data.loc[:,var_name].copy().values.reshape(-1,1))
         return data
 
