@@ -228,7 +228,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_onehot_encode = dataset.loc[:,["variable_to_encode_1","variable_to_encode_2"]]
+            to_onehot_encode = dataset.loc[:,["to_encode_1","to_encode_2"]]
 
             transformer = Transformer()
 
@@ -260,7 +260,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_onehot_encode = dataset.loc[:,["variable_to_encode_1","variable_to_encode_2"]]
+            to_onehot_encode = dataset.loc[:,["to_encode_1","to_encode_2"]]
 
             transformer = Transformer()
 
@@ -295,7 +295,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_ordinal_encode = dataset.loc[:,["variable_to_encode_1","variable_to_encode_2"]]
+            to_ordinal_encode = dataset.loc[:,["to_encode_1","to_encode_2"]]
 
             transformer = Transformer()
 
@@ -326,7 +326,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_ordinal_encode = dataset.loc[:,["variable_to_encode_1","variable_to_encode_2"]]
+            to_ordinal_encode = dataset.loc[:,["to_encode_1","to_encode_2"]]
 
             transformer = Transformer()
 
@@ -369,8 +369,8 @@ class Transformer:
 
             transformer = Transformer()
             transformer.set_custom_encoder({
-                "variable_to_encode_1": {"value1": 0, "value2": 1, "value3": 3}
-                "variable_to_encode_2": {"value1": 0, "value2": 1, "value3": 3}
+                "to_encode_1": {"value1": 0, "value2": 1, "value3": 3}
+                "to_encode_2": {"value1": 0, "value2": 1, "value3": 3}
             })
         """
         assure.type_equals([dict], custom_encoder, "custom_encoder")
@@ -399,8 +399,8 @@ class Transformer:
 
             transformer = Transformer()
             transformer.set_custom_encoder({
-                "variable_to_encode_1": {"value1": 0, "value2": 1, "value3": 3}
-                "variable_to_encode_2": {"value1": 0, "value2": 1, "value3": 3}
+                "to_encode_1": {"value1": 0, "value2": 1, "value3": 3}
+                "to_encode_2": {"value1": 0, "value2": 1, "value3": 3}
             })
 
             dataset_with_encoded_vars = transformer.custom_encode(dataset)
@@ -436,7 +436,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_auto_encode = dataset.loc[:,["variable_to_encode_1","variable_to_encode_2"]]
+            to_auto_encode = dataset.loc[:,["to_encode_1","to_encode_2","target_name"]]
 
             transformer = Transformer()
 
@@ -473,7 +473,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_auto_encode = dataset.loc[:,["variable_to_encode_1","variable_to_encode_2"]]
+            to_auto_encode = dataset.loc[:,["to_encode_1","to_encode_2","target_name"]]
 
             transformer = Transformer()
 
@@ -515,7 +515,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_auto_encode = dataset.loc[:,["variable_to_encode_1","variable_to_encode_2"]]
+            to_auto_encode = dataset.loc[:,["to_encode_1","to_encode_2"]]
 
             transformer = Transformer()
 
@@ -554,7 +554,7 @@ class Transformer:
 
             transformer = Transformer()
 
-            to_replace_missing = dataset.loc[:,["variable_to_replace_1","variable_to_replace_2"]]
+            to_replace_missing = dataset.loc[:,["to_replace_1","to_replace_2"]]
 
             transformer.fit_mice(to_replace_missing)
         """
@@ -587,7 +587,7 @@ class Transformer:
 
             transformer = Transformer()
 
-            to_replace_missing = dataset.loc[:,["variable_to_replace_1","variable_to_replace_2"]]
+            to_replace_missing = dataset.loc[:,["to_replace_1","to_replace_2"]]
 
             transformer.fit_mice(to_replace_missing)
 
@@ -631,7 +631,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_embed = dataset.loc[:,["variable_to_embed_1","variable_to_embed_2"]]
+            to_embed = dataset.loc[:,["to_embed_1","to_embed_2","target_name"]]
 
             transformer = Transformer()
 
@@ -680,7 +680,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_embed = dataset.loc[:,["variable_to_embed_1","variable_to_embed_2"]]
+            to_embed = dataset.loc[:,["to_embed_1","to_embed_2"]]
 
             transformer = Transformer()
 
@@ -727,7 +727,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_log = dataset.loc[:,["variable_to_log_1","variable_to_log_2"]]
+            to_log = dataset.loc[:,["to_log_1","to_log_2"]]
 
             transformer = Transformer()
 
@@ -759,7 +759,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_scale = dataset.loc[:,["variable_to_scale_1","variable_to_scale_2"]]
+            to_scale = dataset.loc[:,["to_scale_1","to_scale_2"]]
 
             transformer = Transformer()
 
@@ -789,7 +789,7 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_scale = dataset.loc[:,["variable_to_scale_1","variable_to_scale_2"]]
+            to_scale = dataset.loc[:,["to_scale_1","to_scale_2"]]
 
             transformer = Transformer()
 
@@ -819,8 +819,8 @@ class Transformer:
 
             dataset = pd.read_csv("my_dataset.csv")
 
-            to_minmax_scale = dataset.loc[:,["variable_to_minmax_1","variable_to_minmax_2"]]
-            to_standard_scale = dataset.loc[:,["variable_to_standard_1","variable_to_standard_2"]]
+            to_minmax_scale = dataset.loc[:,["to_minmax_1","to_minmax_2"]]
+            to_standard_scale = dataset.loc[:,["to_standard_1","to_standard_2"]]
 
             transformer = Transformer()
 
