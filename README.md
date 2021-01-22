@@ -73,9 +73,12 @@ process for predictive modeling.
 
 ### Transformations
 
-    The transformer module assists with handling transformations for a simples Machine Learning pipeline.
+    The transformer module assists with handling transformations for a 
+    simple Machine Learning pipeline.
 
-    It handles removing outliers, log transforming, replacing rare labels in categorical variables, encoding variables, replacing missing data, scaling variables and splitting data for training.
+    It handles removing outliers, log transforming, replacing rare labels in 
+    categorical variables, encoding variables, replacing missing data, scaling 
+    variables and splitting data for training.
 
 #### Import Transformer:
 
