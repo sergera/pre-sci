@@ -178,7 +178,7 @@ class Transformer:
         Replaces rare labels set with "set_frequent_labels" method with the string "Rare"
 
         data: Pandas DataFrame
-            DataFrame containing (but not limited to) variables set with 
+            DataFrame containing (but not limited to) all variables set with 
             "set_frequent_labels" method
 
         returns: Pandas DataFrame
@@ -248,7 +248,7 @@ class Transformer:
         Encodes all variables that were set with the "fit_onehot_encoder" method
 
         data: Pandas DataFrame
-            DataFrame containing (but not limited to) variables included in 
+            DataFrame containing (but not limited to) all variables included in 
             "fit_onehot_encoder" method
 
         returns: Pandas DataFrame
@@ -314,7 +314,7 @@ class Transformer:
         Encodes all variables that were set with the "fit_ordinal_encoder" method
 
         data: Pandas DataFrame
-            DataFrame containing (but not limited to) variables included in 
+            DataFrame containing (but not limited to) all variables included in 
             "fit_ordinal_encoder" method
 
         returns: Pandas DataFrame
@@ -385,7 +385,7 @@ class Transformer:
         Encodes all variables that were set with the "set_custom_encoder" method
 
         data: Pandas DataFrame
-            DataFrame containing (but not limited to) variables set with 
+            DataFrame containing (but not limited to) all variables set with 
             "set_custom_encoder" method
 
         returns: Pandas DataFrame
@@ -503,7 +503,7 @@ class Transformer:
         "fit_auto_encoder_boolean_target" methods
 
         data: Pandas DataFrame
-            DataFrame containing (but not limited to) variables included in the 
+            DataFrame containing (but not limited to) all variables included in the 
             "fit_auto_encoder_continuous_target" or "fit_auto_encoder_boolean_target" methods
 
         returns: Pandas DataFrame
@@ -573,7 +573,7 @@ class Transformer:
         the data with the inputted variable order
 
         data: Pandas DataFrame
-            DataFrame containing (but not limited to) variables included in 
+            DataFrame containing (but not limited to) all variables included in 
             "fit_mice" method
 
         returns: Pandas DataFrame
@@ -663,7 +663,7 @@ class Transformer:
     def embed(self, data):
         """
         data: Pandas DataFrame
-            DataFrame containing (but not limited to) variables included in 
+            DataFrame containing (but not limited to) all variables included in 
             "fit_embedder" method
 
         returns: Pandas DataFrame
@@ -807,7 +807,7 @@ class Transformer:
         Scales variables with saved models
 
         data: Pandas DataFrame
-           DataFrame containing (but not limited to) variables included in the 
+           DataFrame containing (but not limited to) all variables included in the 
            "fit_minmax_scaler" and "fit_standard_scaler" methods
 
         returns: Pandas DataFrame
@@ -837,14 +837,14 @@ class Transformer:
 
         return copy
 
-    def split(self, data, target, test_size=0.1):
+    def split(self, data, target_name, test_size=0.1):
         """
         Splits data for training
 
         data: Pandas DataFrame
             DataFrame with training dataset including all features and target for splitting
 
-        target: string
+        target_name: string
             String with target name
 
         test_size: float
@@ -863,11 +863,11 @@ class Transformer:
             X_train, X_test, y_train, y_test = transformer.split(dataset, "target_name")
         """
         assure.type_equals([type(pd.DataFrame())], data, "data")
-        assure.type_equals([str], target, "target")
+        assure.type_equals([str], target_name, "target_name")
 
         copy = data.copy()
         X_train, X_test, y_train, y_test = train_test_split(
-            copy.drop(target, axis=1), copy.loc[:,target],
+            copy.drop(target_name, axis=1), copy.loc[:,target_name],
             test_size=test_size,
             random_state=self.seed
         )

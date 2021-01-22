@@ -94,7 +94,7 @@ process for predictive modeling.
 
 ##### 2- Log transforming
 
-    to_log = dataset.loc[:,["variable_to_log_1","variable_to_log_2"]]
+    to_log = dataset.loc[:,["to_log_1","to_log_2"]]
 
     logged = transformer.log(to_log)
 
@@ -126,7 +126,7 @@ process for predictive modeling.
 
 ##### 2- Onehot encoding (fit_onehot_encoder > onehot_encode)
 
-    to_onehot_encode = dataset.loc[:,["variable_to_encode_1","variable_to_encode_2"]]
+    to_onehot_encode = dataset.loc[:,["to_encode_1","to_encode_2"]]
 
     transformer.fit_onehot_encoder(to_onehot_encode)
 
@@ -134,7 +134,7 @@ process for predictive modeling.
 
 ##### 3- Ordinal encoding (fit_ordinal_encoder > ordinal_encode)
 
-    to_ordinal_encode = dataset.loc[:,["variable_to_encode_1","variable_to_encode_2"]]
+    to_ordinal_encode = dataset.loc[:,["to_encode_1","to_encode_2"]]
 
     transformer.fit_ordinal_encoder(to_ordinal_encode)
 
@@ -143,15 +143,15 @@ process for predictive modeling.
 ##### 4- Custom encoding (set_custom_encoder > custom_encode)
 
     transformer.set_custom_encoder({
-        "variable_to_encode_1": {"value1": 0, "value2": 1, "value3": 3}
-        "variable_to_encode_2": {"value1": 0, "value2": 1, "value3": 3}
+        "to_encode_1": {"value1": 0, "value2": 1, "value3": 3}
+        "to_encode_2": {"value1": 0, "value2": 1, "value3": 3}
     })
 
     dataset_with_encoded_vars = transformer.custom_encode(dataset)
 
 ##### 5.a- Auto encoding to continuous target (fit_auto_encoder_continuous_target > auto_encode)
 
-    to_auto_encode = dataset.loc[:,["variable_to_encode_1","variable_to_encode_2"]]
+    to_auto_encode = dataset.loc[:,["to_encode_1","to_encode_2","target_name"]]
 
     transformer.fit_auto_encoder_continuous_target(to_auto_encode, "target_name")
 
@@ -159,7 +159,7 @@ process for predictive modeling.
 
 ##### 5.b- Auto encoding to boolean target (fit_auto_encoder_boolean_target > auto_encode)
 
-    to_auto_encode = dataset.loc[:,["variable_to_encode_1","variable_to_encode_2"]]
+    to_auto_encode = dataset.loc[:,["to_encode_1","to_encode_2","target_name"]]
 
     transformer.fit_auto_encoder_boolean_target(to_auto_encode, "target_name")
 
@@ -167,7 +167,7 @@ process for predictive modeling.
 
 ##### 6- Replacing missing data (fit_mice > replace_missing)
 
-    to_replace_missing = dataset.loc[:,["variable_to_replace_1","variable_to_replace_2"]]
+    to_replace_missing = dataset.loc[:,["to_replace_1","to_replace_2"]]
 
     transformer.fit_mice(to_replace_missing)
 
@@ -175,7 +175,7 @@ process for predictive modeling.
 
 ##### 7- Deep Embedding (fit_embedder > embed)
 
-    to_embed = dataset.loc[:,["variable_to_embed_1","variable_to_embed_2"]]
+    to_embed = dataset.loc[:,["to_embed_1","to_embed_2","target_name"]]
 
     transformer.fit_embedder(to_embed, "target_name")
 
@@ -183,7 +183,7 @@ process for predictive modeling.
 
 ##### 8.a- MinMax scaling
 
-    to_scale = dataset.loc[:,["variable_to_scale_1","variable_to_scale_2"]]
+    to_scale = dataset.loc[:,["to_scale_1","to_scale_2"]]
 
     transformer.fit_minmax_scaler(to_scale)
 
@@ -191,7 +191,7 @@ process for predictive modeling.
 
 ##### 9.b- Standard scaling
 
-    to_scale = dataset.loc[:,["variable_to_scale_1","variable_to_scale_2"]]
+    to_scale = dataset.loc[:,["to_scale_1","to_scale_2"]]
 
     transformer.fit_standard_scaler(to_scale)
 
