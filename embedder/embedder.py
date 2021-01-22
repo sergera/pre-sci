@@ -26,18 +26,29 @@ class LearningRateReducerCb(tf.keras.callbacks.Callback):
     self.model.optimizer.lr.assign(new_lr)
 
 class Embedder():
-    def __init__(self, categorical_feature, cardinality, target, seed):
-        self.sample_size = len(categorical_feature)
-        self.categorical_feature = categorical_feature
-        self.cardinality = cardinality
-        self.target = target
+    def __init__(self, categorical_feature, target, seed):
         self.seed = seed
+        self.categorical_feature = categorical_feature
+        self.feature_cardinality = len(np.unique(categorical_feature))
+        self.target = target
+    
+        # TODO find out how to measure the best loss function for each case
+        # and decide the right loss function
+        target_cardinality = len(np.unique(target))
+        if target_cardinality < 3:
+            # for binary target
+            self.loss_function = "kl_divergence"
+            # self.loss_function = "cosine_similarity"
+        elif target_cardinality >= 3:
+            # for continuous target
+            self.loss_function = rmse
+            # self.loss_function = "mse"
+            # self.loss_function = "binary_crossentropy"
 
-        self.loss_function = tf.nn.softmax_cross_entropy_with_logits
         self.optimizer = "adam"
 
         self.model = keras.Sequential()
-        self.embedding_size = min(50, self.cardinality+1/2)
+        self.embedding_size = min(50, self.feature_cardinality+1/2)
 
         self.create_model()
         self.fit()
@@ -45,8 +56,8 @@ class Embedder():
     def create_model(self):
         self.model.add(
             layers.Embedding(
-                input_dim=self.cardinality,
-                output_dim=int(self.embedding_size), 
+                input_dim=self.feature_cardinality,
+                output_dim=int(self.embedding_size),
                 input_length=1,
                 name="embedding",
             )
@@ -54,18 +65,18 @@ class Embedder():
         self.model.add(layers.Flatten())
         self.model.add(layers.Dense(50, activation=tf.nn.relu6))
         self.model.add(layers.Dense(15, activation=tf.nn.relu6))
-        self.model.add(layers.Dense(self.embedding_size, activation=tf.nn.relu6))
+        self.model.add(layers.Dense(int(self.embedding_size), activation=tf.nn.relu6))
         self.model.compile(
-            loss=self.loss_function, 
-            optimizer=self.optimizer, 
+            loss=self.loss_function,
+            optimizer=self.optimizer,
             metrics=["accuracy"]
         )
 
     def fit(self):
         self.model.fit(
             x=self.categorical_feature.astype(np.float64), 
-            y=self.target.to_numpy().astype(np.float64),
-            epochs=50, 
+            y=self.target.astype(np.float64),
+            epochs=50,
             batch_size=4,
             callbacks=[LearningRateReducerCb()]
         )
